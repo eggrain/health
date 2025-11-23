@@ -1,0 +1,35 @@
+name: deploy-health
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install npm packages
+        working-directory: .
+        run: npm install
+      - name: Build wwwroot assets
+        working-directory: .
+        run: npm run build:css
+      - name: Publish self-contained executable
+        run: dotnet publish . -r linux-arm64 --self-contained true
+      - name: SCP dotnet executable to VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
+          source: "./bin/Release/net8.0/linux-arm64/publish"
+          target: ${{ secrets.health_DEPLOY_DIRECTORY }}
