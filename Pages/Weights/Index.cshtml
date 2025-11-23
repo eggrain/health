@@ -1,0 +1,113 @@
+@page
+@model health.Pages.Weights.IndexModel
+
+@{
+    ViewData["Title"] = "Weight history";
+}
+
+<h1 class="mb-4">Weight history</h1>
+
+@if (Model.Measurements.Count == 0)
+{
+    <div class="alert alert-info">
+        No weight measurements yet. Go back to your <a asp-page="/Dashboard/Index">dashboard</a> to add one.
+    </div>
+}
+else
+{
+    <div class="mb-4">
+        <div class="card">
+            <div class="card-header">
+                Trend
+            </div>
+            <div class="card-body">
+                <canvas id="weightChart" style="max-height: 320px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Measurements
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive mb-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Date &amp; time</th>
+                            <th scope="col">Weight (@Model.Unit)</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in Model.Measurements.OrderByDescending(x => x.MeasuredAt))
+                        {
+                            <tr>
+                                <td>@m.MeasuredAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>@m.Value.ToString("0.0")</td>
+                                <td class="text-end">
+                                    <form method="post" asp-page-handler="Delete" asp-route-id="@m.Id" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Delete this measurement?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (function () {
+            const labels = @Html.Raw(Model.ChartLabelsJson);
+            const data = @Html.Raw(Model.ChartDataJson);
+
+            if (!labels.length || !data.length) {
+                return;
+            }
+
+            const ctx = document.getElementById('weightChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Weight (@Model.Unit)',
+                        data: data,
+                        tension: 0.25,
+                        fill: false,
+                        borderWidth: 2,
+                        pointRadius: 2
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
+}
