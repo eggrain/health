@@ -1,0 +1,66 @@
+@model ViewModels.WeightCardViewModel
+
+<div class="card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Weight</span>
+        <a asp-page="/Weights/Index" class="btn btn-sm btn-outline-secondary">
+            View history
+        </a>
+    </div>
+
+    <div class="card-body">
+
+        @if (Model.LatestWeight is not null)
+        {
+            <p class="mb-1">
+                <strong>@Model.LatestWeight.Value</strong> @Model.Unit
+                <small class="text-muted">
+                    (@Model.LatestWeight.MeasuredAt.ToLocalTime().ToShortDateString())
+                </small>
+            </p>
+
+            @if (Model.WeightDelta is not null)
+            {
+                <p class="text-muted mb-3">
+                    Change since last:
+                    <span class="@(Model.WeightDelta > 0 ? "text-danger" : "text-success")">
+                        @(Model.WeightDelta > 0 ? "↗" : "↘")
+                        @Math.Abs(Model.WeightDelta.Value).ToString("0.0") @Model.Unit
+                    </span>
+                </p>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No weight measurements yet. Add your first one:</p>
+        }
+
+        <form method="post" asp-page-handler="AddWeight" class="row g-2">
+            <div class="col-6 col-md-4">
+                <input asp-for="NewEntry.Weight"
+                       class="form-control"
+                       placeholder="Weight" />
+            </div>
+
+            <div class="col-6 col-md-4">
+                <input asp-for="NewEntry.MeasuredAt"
+                       type="datetime-local"
+                       class="form-control" />
+            </div>
+
+            <div class="col-12 col-md-4">
+                <button type="submit" class="btn btn-primary w-100">
+                    Save
+                </button>
+            </div>
+        </form>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="text-danger mt-2">
+                @Model.ErrorMessage
+            </div>
+        }
+
+    </div>
+</div>
