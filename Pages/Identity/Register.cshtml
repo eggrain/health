@@ -1,0 +1,28 @@
+@page
+@model health.Pages.Identity.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Create an account</h1>
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3 form-floating">
+        <input asp-for="Input.Email" class="form-control" placeholder="" />
+        <label asp-for="Input.Email" class="form-label"></label>
+    </div>
+
+    <div class="mb-3 form-floating">
+        <input asp-for="Input.Password" class="form-control" placeholder="" />
+        <label asp-for="Input.Password" class="form-label"></label>
+    </div>
+
+    <div class="mb-3 form-floating">
+        <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="" />
+        <label asp-for="Input.ConfirmPassword" class="form-label">Confirm password</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>

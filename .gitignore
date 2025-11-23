@@ -3,3 +3,6 @@ obj/
 wwwroot\css\site.css
 wwwroot\css\site.css.map
 node_modules/
+health.db
+health.db-wal
+health.db-shm
