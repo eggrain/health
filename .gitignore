@@ -6,3 +6,4 @@ node_modules/
 health.db
 health.db-wal
 health.db-shm
+wwwroot/js/bootstrap.bundle.min.js

@@ -22,7 +22,7 @@ jobs:
         run: npm install
       - name: Build wwwroot assets
         working-directory: .
-        run: npm run build:css
+        run: npm run build-assets-linux
       - name: Publish self-contained executable
         run: dotnet publish . -r linux-arm64 --self-contained true
       - name: SCP dotnet executable to VM
